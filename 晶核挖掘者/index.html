@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="Icon" href="./image/紫水晶.png">
+    <title>晶核挖掘者</title>
+    <style>
+        * {
+            font-family: Noto Sans TC;
+            text-shadow: 1px 1px #00000033;
+        }
+
+        /*標籤*/
+        body {
+            background-color: #808080ff;
+            padding: 16px;
+            justify-items: center;
+            cursor: default;
+        }
+
+        h1 {
+            margin: 8px;
+            font-size: 28px;
+        }
+
+        div {
+            font-size: 28px;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /*佔位*/
+        .Placeholder {
+            height: 16px;
+        }
+
+        /*.Mining-Circle*/
+        .Mining-Circle {
+            background-color: #a0a0a0ff;
+            width: 27vh;
+            height: 27vh;
+            border: 2px solid #000000ff;
+            border-radius: 50%;
+            padding-left: 3vh;
+            padding-bottom: 3vh;
+            margin: 8px;
+            cursor: pointer;
+        }
+        .Mining-Circle:hover {
+            background-color: #999999ff;
+        }
+        .Mining-Circle:active {
+            background-color: #999999ff;
+            width: 25vh;
+            height: 25vh;
+            margin: calc(8px + 1vh);
+        }
+
+        /*單行元素*/
+        .Dsp-Item {
+            display: flex;
+            gap: 4px;
+            height: 40px;
+        }
+
+        .Upgrade-Item {
+            display: grid;
+            gap: 4px;
+            grid-template-columns: 64px 256px 160px;
+            grid-template-rows: 36px 24px;
+            grid-template-areas: "Icon Name Button" "Icon Description Button";
+        }
+        .Upg-Icon {
+            grid-area: Icon;
+        }
+        .Upg-Name {
+            grid-area: Name;
+        }
+        .Upg-Description {
+            grid-area: Description;
+            font-size: 15px;
+            color: #333333ff;
+        }
+        .Upg-Btn-Area {
+            grid-area: Button;
+            justify-self: end;
+            padding-top: 12px;
+        }
+
+        .Upg-Btn {
+            display: grid;
+            grid-template-columns: 32px auto 32px;
+            grid-template-rows: auto 6px;
+            gap: 4px;
+            background-color: #00cc00ff;
+            width: 144px;
+            height: 46px;
+            border: 2px solid #00aa00ff;
+            border-bottom: 8px solid #00bb00ff;
+            cursor: pointer;
+        }
+        .Upg-Btn:hover {
+            background-color: #00c300ff;
+            border: 2px solid #00a100ff;
+            border-bottom: 8px solid #00b200ff;
+        }
+        .Upg-Btn:active {
+            height: 40px;
+            margin-top: 6px;
+            border-bottom: 2px solid #00a000ff;
+        }
+        .Upg-Btn-Text {
+            font-size: 21px;
+            text-align: end;
+        }
+
+        /*特殊文字*/
+        .crit-hit {
+            color: #00a0ffff;
+        }
+        .crit-hit:hover::after {
+            background: #00a0ffcc;
+        }
+        .Value-Dsp.Active {
+            color: #00cc00ff;
+        }
+
+        /*彈出框（AI生成）*/
+        .SP-Noun {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #333333ff; /* 表示可提示 */
+        }
+
+        .SP-Noun:hover::after {
+            content: attr(data-info);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #000000ff;
+            font-size: 12px;
+            padding: 4px 8px;
+            white-space: nowrap;
+            z-index: 67;
+            pointer-events: none;
+        }
+
+        /*素材*/
+        .Icon-64 {
+            width: 40px;
+            height: 40px;
+        }
+        .Icon-32 {
+            width: 32px;
+            height: 32px;
+        }
+        .Upgrade {
+            color: #00a000ff;
+        }
+    </style>
+</head>
+<body>
+    <!--header-->
+    <h1>[晶核挖掘者 | By: PhianNaloE feat. DeepSeek]</h1>
+    <div class="Placeholder"></div>
+    <!--.Mining-Circle-->
+    <div class="Mining-Circle" id="pickaxe">
+        <img src="./image/鑽石鎬.png">
+    </div>
+    <div class="Placeholder"></div>
+    <!--item-->
+    <div class="crystal-Dsp Dsp-Item">
+        <div class="Jincore-Icon Icon-64"><img src="./image/紫水晶.png"></div>
+        <div id="crystal-value">晶核 ×0</div>
+    </div>
+    <div class="Placeholder"></div>
+    <!--upgrade-->
+    <div class="Area-Bar Upgrade">—————————升級—————————</div>
+    <div class="Upgrade-Item">
+        <div class="Upg-Icon"><img src="./image/鑽石鎬.png"></div>
+        <div class="Upg-Name">鎬擊效率 <span class="Value-Dsp" id="PickaxeEfficiency-lvl">Lvl.0</span></div>
+        <div class="Upg-Description">每次挖掘採集 <span class="Value-Dsp" id="crystalPerClick-value">1</span> 晶核</div>
+        <div class="Upg-Btn-Area">
+            <button class="Upg-Btn" id="PickaxeEfficiency-upg">
+                <img src="./image/升級.png">
+                <div class="Upg-Btn-Text" id="PickaxeEfficiency-price">10</div>
+                <img src="./image/紫水晶.png">
+            </button>
+        </div>
+    </div>
+    <div class="Upgrade-Item">
+        <div class="Upg-Icon"><img src="./image/尖鑽頭.png"></div>
+        <div class="Upg-Name">自動鑽機 <span class="Value-Dsp" id="AutoMine-lvl">Lvl.0</span></div>
+        <div class="Upg-Description">每 1000 毫秒自動采集 <span class="Value-Dsp" id="crystalPerSecond-value">1</span> 晶核</div>
+        <div class="Upg-Btn-Area">
+            <button class="Upg-Btn" id="AutoMine-upg">
+                <img src="./image/升級.png">
+                <div class="Upg-Btn-Text" id="AutoMine-price">15</div>
+                <img src="./image/紫水晶.png">
+            </button>
+        </div>
+    </div>
+    <div class="Upgrade-Item">
+        <div class="Upg-Icon"><img src="./image/紫水晶礦.png"></div>
+        <div class="Upg-Name">高質晶礦 <span class="Value-Dsp" id="highQualityOre-lvl">Lvl.0</span></div>
+        <div class="Upg-Description">
+            <span class="Value-Dsp" id="highQualityOreProb-value">0%</span>
+            概率<span class="SP-Noun crit-hit" data-info="三倍產出，且額外採得 5 晶核">採中高質晶礦</span>
+        </div>
+        <div class="Upg-Btn-Area">
+            <button class="Upg-Btn" id="highQualityOre-upg">
+                <img src="./image/升級.png">
+                <div class="Upg-Btn-Text" id="highQualityOre-price">20</div>
+                <img src="./image/紫水晶.png">
+            </button>
+        </div>
+    </div>
+    <script>
+        //Dom 元素
+        const pickaxe = document.getElementById("pickaxe");
+        const crystal_value = document.getElementById("crystal-value");
+        const PickaxeEfficiency_lvl = document.getElementById("PickaxeEfficiency-lvl");
+        const PickaxeEfficiency_upg = document.getElementById("PickaxeEfficiency-upg");
+        const PickaxeEfficiency_price = document.getElementById("PickaxeEfficiency-price");
+        const crystalPerClick_value = document.getElementById("crystalPerClick-value");
+        const AutoMine_lvl = document.getElementById("AutoMine-lvl");
+        const AutoMine_upg = document.getElementById("AutoMine-upg");
+        const AutoMine_price = document.getElementById("AutoMine-price");
+        const crystalPerSecond_value = document.getElementById("crystalPerSecond-value");
+        const highQualityOre_lvl = document.getElementById("highQualityOre-lvl");
+        const highQualityOre_upg = document.getElementById("highQualityOre-upg");
+        const highQualityOre_price = document.getElementById("highQualityOre-price");
+        const highQualityOreProb_value = document.getElementById("highQualityOreProb-value");
+
+        //變數
+        let crystal = 0;
+        let crystalPerClick = 1;
+        let crystalPerSecond = 0;
+        let highQualityOre = 0;
+        let pickaxeEfficiencyLvl = 0;
+        let pickaxeEfficiencyPrice = 10;
+        let autoMineLvl = 0;
+        let autoMinePrice = 15;
+        let highQualityOreLvl = 0;
+        let highQualityOrePrice = 20;
+
+        //挖掘
+        pickaxe.addEventListener("click", () => {
+            let rng = Math.random()
+            if (rng < highQualityOre) {
+                crystal += crystalPerClick*3+5
+            } else {
+                crystal += crystalPerClick;
+            }
+            UpgradeDisplay();
+        });
+
+        //升級
+        PickaxeEfficiency_upg.addEventListener("click", () => {
+            if (crystal >= pickaxeEfficiencyPrice) {
+                crystal -= pickaxeEfficiencyPrice;
+                pickaxeEfficiencyLvl ++;
+                crystalPerClick ++;
+                pickaxeEfficiencyPrice *= 2;
+                UpgradeDisplay();
+            }
+        });
+        PickaxeEfficiency_upg.addEventListener("mouseenter", () => {
+            crystalPerClick_value.textContent = `${crystalPerClick}→${crystalPerClick + 1}`;
+            crystalPerClick_value.classList.add("Active");
+            PickaxeEfficiency_lvl.textContent = `Lvl.${pickaxeEfficiencyLvl}→${pickaxeEfficiencyLvl + 1}`;
+            PickaxeEfficiency_lvl.classList.add("Active");
+        });
+        PickaxeEfficiency_upg.addEventListener("mouseleave", () => {
+            crystalPerClick_value.textContent = crystalPerClick;
+            crystalPerClick_value.classList.remove("Active");
+            PickaxeEfficiency_lvl.textContent = `Lvl.${pickaxeEfficiencyLvl}`;
+            PickaxeEfficiency_lvl.classList.remove("Active");
+        });
+
+        AutoMine_upg.addEventListener("click", () => {
+            if (crystal >= autoMinePrice) {
+                crystal -= autoMinePrice;
+                autoMineLvl ++;
+                crystalPerSecond ++;
+                autoMinePrice *= 2;
+                UpgradeDisplay();
+            }
+        });
+        AutoMine_upg.addEventListener("mouseenter", () => {
+            crystalPerSecond_value.textContent = `${crystalPerSecond}→${crystalPerSecond + 1}`;
+            crystalPerSecond_value.classList.add("Active");
+            AutoMine_lvl.textContent = `Lvl.${autoMineLvl}→${autoMineLvl + 1}`;
+            AutoMine_lvl.classList.add("Active");
+        });
+        AutoMine_upg.addEventListener("mouseleave", () => {
+            crystalPerSecond_value.textContent = crystalPerSecond;
+            crystalPerSecond_value.classList.remove("Active");
+            AutoMine_lvl.textContent = `Lvl.${autoMineLvl}`;
+            AutoMine_lvl.classList.remove("Active");
+        });
+
+        highQualityOre_upg.addEventListener("click", () => {
+            if (crystal >= highQualityOrePrice) {
+                crystal -= highQualityOrePrice;
+                highQualityOreLvl ++;
+                highQualityOre += 0.03;
+                highQualityOrePrice *= 2;
+                UpgradeDisplay();
+            }
+        });
+        highQualityOre_upg.addEventListener("mouseenter", () => {
+            highQualityOreProb_value.textContent = `${highQualityOre * 100}%→${highQualityOre * 100 + 3}%`;
+            highQualityOreProb_value.classList.add("Active");
+            highQualityOre_lvl.textContent = `Lvl.${highQualityOreLvl}→${highQualityOreLvl + 1}`;
+            highQualityOre_lvl.classList.add("Active");
+        });
+        highQualityOre_upg.addEventListener("mouseleave", () => {
+            highQualityOreProb_value.textContent = `${highQualityOre * 100}%`;
+            highQualityOreProb_value.classList.remove("Active");
+            highQualityOre_lvl.textContent = `Lvl.${highQualityOreLvl}`;
+            highQualityOre_lvl.classList.remove("Active");
+        });
+
+        setInterval(() => {
+            let rng = Math.random()
+            if (crystalPerSecond > 0) {
+                if (rng < highQualityOre) {
+                    crystal += crystalPerSecond*3+5
+                } else {
+                    crystal += crystalPerSecond;
+                }
+                UpgradeDisplay();
+            }
+        }, 1000)
+
+        function UpgradeDisplay() {
+            crystal_value.textContent = `晶核 ×${crystal}`;
+            PickaxeEfficiency_lvl.textContent = `Lvl.${pickaxeEfficiencyLvl}`
+            AutoMine_lvl.textContent = `Lvl.${autoMineLvl}`
+            highQualityOre_lvl.textContent = `Lvl.${highQualityOreLvl}`
+            PickaxeEfficiency_price.textContent = `${pickaxeEfficiencyPrice}`
+            AutoMine_price.textContent = `${autoMinePrice}`
+            highQualityOre_price.textContent = `${highQualityOrePrice}`
+            crystalPerClick_value.textContent = `${crystalPerClick}`
+            crystalPerSecond_value.textContent = `${crystalPerSecond}`
+            highQualityOreProb_value.textContent = `${highQualityOre*100}%`
+        };
+    </script>
+</body>
+</html>
